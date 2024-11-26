@@ -1,0 +1,83 @@
+{% extends "admin/base.html" %}
+
+{% block title %} - 予約詳細{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title mb-4">予約詳細</h2>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>予約情報</h5>
+                        <dl>
+                            <dt>予約日時</dt>
+                            <dd>{{ appointment.appointment_date.strftime('%Y/%m/%d') }} {{ appointment.appointment_time.strftime('%H:%M') }}</dd>
+                            <dt>受付日時</dt>
+                            <dd>{{ appointment.created_at.strftime('%Y/%m/%d %H:%M') }}</dd>
+                            <dt>ステータス</dt>
+                            <dd>
+                                {% if appointment.status == 'pending' %}
+                                    <span class="badge bg-warning">未対応</span>
+                                {% elif appointment.status == 'confirmed' %}
+                                    <span class="badge bg-info">確認済み</span>
+                                {% elif appointment.status == 'completed' %}
+                                    <span class="badge bg-success">完了</span>
+                                {% elif appointment.status == 'cancelled' %}
+                                    <span class="badge bg-danger">キャンセル</span>
+                                {% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>ペット情報</h5>
+                        <dl>
+                            <dt>飼い主様</dt>
+                            <dd>{{ appointment.pet_owner }}</dd>
+                            <dt>ペットの名前</dt>
+                            <dd>{{ appointment.pet_name }}</dd>
+                            <dt>種類</dt>
+                            <dd>{{ appointment.pet_type }}</dd>
+                        </dl>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h5>連絡先</h5>
+                        <dl>
+                            <dt>電話番号</dt>
+                            <dd>{{ appointment.phone }}</dd>
+                            <dt>メールアドレス</dt>
+                            <dd>{{ appointment.email }}</dd>
+                        </dl>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h5>来院理由</h5>
+                        <p>{{ appointment.reason }}</p>
+                    </div>
+                </div>
+                <form method="POST" class="needs-validation" novalidate>
+                    {{ form.csrf_token }}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.status.label(class="form-label") }}
+                                {{ form.status(class="form-select") }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3 d-flex align-items-end h-100">
+                                <button type="submit" class="btn btn-primary">ステータスを更新</button>
+                                <a href="{{ url_for('admin_appointments') }}" class="btn btn-outline-secondary ms-2">戻る</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %} - ホーム{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center hero-content">
+            <div class="col-md-6">
+                <h1 class="display-4 fw-bold mb-4">心のこもった診療を<br>大切な家族へ</h1>
+                <p class="lead mb-4">みどりおか動物病院は、最新の医療設備と熟練した獣医師による安心の診療をご提供します。<br>あなたの大切な家族の健康を守ります。</p>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('reservation') }}" class="btn btn-primary btn-lg">予約する</a>
+                    <a href="{{ url_for('services') }}" class="btn btn-outline-primary btn-lg">診療案内</a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <img src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97" class="img-fluid hero-image" alt="優しい診療風景">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2 class="text-center section-title">当院の特徴</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <img src="https://images.unsplash.com/photo-1587854692152-cbe660dbde88" class="card-img-top" alt="最新の医療設備">
+                    <div class="card-body">
+                        <h5 class="card-title">最新の医療設備</h5>
+                        <p class="card-text">高度な医療機器を導入し、正確な診断と適切な治療を提供します。定期的な健康診断から高度な治療まで、充実した医療環境を整えています。</p>
+                        <a href="{{ url_for('services') }}" class="btn btn-outline-primary mt-3">詳しく見る</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <img src="https://images.unsplash.com/photo-1612531386530-97286d97c2d2" class="card-img-top" alt="優しい診療">
+                    <div class="card-body">
+                        <h5 class="card-title">優しい診療</h5>
+                        <p class="card-text">ストレスの少ない環境で、丁寧な診療を心がけています。不安な気持ちに寄り添い、わかりやすい説明を心がけています。</p>
+                        <a href="{{ url_for('services') }}" class="btn btn-outline-primary mt-3">詳しく見る</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <img src="https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def" class="card-img-top" alt="経験豊富なスタッフ">
+                    <div class="card-body">
+                        <h5 class="card-title">経験豊富なスタッフ</h5>
+                        <p class="card-text">熟練した獣医師とスタッフが、確かな技術で対応します。継続的な研修で最新の医療知識と技術を習得しています。</p>
+                        <a href="{{ url_for('services') }}" class="btn btn-outline-primary mt-3">詳しく見る</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section bg-lighter-green">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09" class="img-fluid rounded-lg shadow-lg" alt="診察風景">
+            </div>
+            <div class="col-md-6">
+                <h2 class="mb-4">予防医療のご案内</h2>
+                <p class="lead mb-4">定期的な健康診断や予防接種は、大切なペットの健康を守る基本です。</p>
+                <ul class="list-unstyled mb-4">
+                    <li class="mb-3">✓ 年齢に応じた健康診断</li>
+                    <li class="mb-3">✓ 予防接種プログラム</li>
+                    <li class="mb-3">✓ 生活環境に合わせたアドバイス</li>
+                </ul>
+                <a href="{{ url_for('services') }}" class="btn btn-primary">詳しくはこちら</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <img src="https://images.unsplash.com/photo-1601758003122-53c40e686a19" class="img-fluid rounded" alt="診察風景">
+            </div>
+            <div class="col-md-6">
+                <h2>予防医療のご案内</h2>
+                <p>定期的な健康診断や予防接種は、大切なペットの健康を守る基本です。当院では、年齢や生活環境に応じた最適な予防プログラムをご提案いたします。</p>
+                <a href="{{ url_for('services') }}" class="btn btn-primary">詳しくはこちら</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

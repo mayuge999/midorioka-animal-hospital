@@ -1,0 +1,286 @@
+{% extends "admin/base.html" %}
+
+{% block title %} - お問い合わせ一覧{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>お問い合わせ一覧</h2>
+                <div class="d-flex gap-2">
+                    <div class="input-group">
+                        <input type="text" id="searchInput" class="form-control" placeholder="検索...">
+                        <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <select class="form-select" id="statusFilter">
+                        <option value="">全てのステータス</option>
+                        <option value="unread">未読</option>
+                        <option value="read">既読</option>
+                        <option value="replied">返信済み</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                    <table class="table table-hover" id="contactsTable">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-sort="created_at">受付日時 <i class="fas fa-sort"></i></th>
+                                <th class="sortable" data-sort="name">お名前 <i class="fas fa-sort"></i></th>
+                                <th>メールアドレス</th>
+                                <th>内容</th>
+                                <th class="sortable" data-sort="status">ステータス <i class="fas fa-sort"></i></th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contact in contacts %}
+                            <tr data-id="{{ contact.id }}" class="contact-row">
+                                <td>{{ contact.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
+                                <td>{{ contact.name }}</td>
+                                <td>{{ contact.email }}</td>
+                                <td class="text-truncate" style="max-width: 200px;">{{ contact.message }}</td>
+                                <td>
+                                    <span class="status-badge badge {% if contact.status == 'unread' %}bg-danger{% elif contact.status == 'read' %}bg-info{% else %}bg-success{% endif %}">
+                                        {{ {'unread': '未読', 'read': '既読', 'replied': '返信済み'}[contact.status] }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('admin_contact_detail', id=contact.id) }}" class="btn btn-sm btn-outline-primary">詳細</a>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary update-status" data-id="{{ contact.id }}">
+                                            更新
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-end align-items-center mt-3">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination mb-0">
+                            {% if page > 1 %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin_contacts', page=page-1) }}">前へ</a>
+                            </li>
+                            {% endif %}
+                            {% for p in range(max(1, page-2), min(total_pages + 1, page+3)) %}
+                            <li class="page-item {% if p == page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('admin_contacts', page=p) }}">{{ p }}</a>
+                            </li>
+                            {% endfor %}
+                            {% if page < total_pages %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin_contacts', page=page+1) }}">次へ</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ステータス更新モーダル -->
+<div class="modal fade" id="statusUpdateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">ステータス更新</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <select class="form-select" id="newStatus">
+                    <option value="unread">未読</option>
+                    <option value="read">既読</option>
+                    <option value="replied">返信済み</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                <button type="button" class="btn btn-primary" id="updateStatusButton">更新</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ローディングオーバーレイ -->
+<div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none" style="background: rgba(255,255,255,0.8); z-index: 9999;">
+    <div class="position-absolute top-50 start-50 translate-middle">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 検索機能の初期化
+
+    // ステータス更新の非同期処理
+    const statusUpdateModal = new bootstrap.Modal(document.getElementById('statusUpdateModal'));
+    let currentContactId = null;
+
+    document.querySelectorAll('.update-status').forEach(button => {
+        button.addEventListener('click', function() {
+            currentContactId = this.dataset.id;
+            statusUpdateModal.show();
+        });
+    });
+
+    document.getElementById('updateStatusButton').addEventListener('click', async function() {
+        const button = this;
+        const newStatus = document.getElementById('newStatus').value;
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const originalButtonText = button.textContent;
+        
+        try {
+            // ボタンを無効化し、ローディング表示
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 更新中...';
+            loadingOverlay.classList.remove('d-none');
+            
+            const response = await fetch(`/admin/contacts/${currentContactId}/update-status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const row = document.querySelector(`tr[data-id="${currentContactId}"]`);
+                const statusBadge = row.querySelector('.status-badge');
+                const updateButton = row.querySelector('.update-status');
+                
+                // ステータスバッジの更新
+                statusBadge.className = `status-badge badge ${
+                    newStatus === 'unread' ? 'bg-danger' : 
+                    newStatus === 'read' ? 'bg-info' : 'bg-success'
+                }`;
+                statusBadge.textContent = {
+                    'unread': '未読',
+                    'read': '既読',
+                    'replied': '返信済み'
+                }[newStatus];
+
+                // ボタンのスタイルを成功状態に更新
+                updateButton.classList.remove('btn-outline-secondary');
+                updateButton.classList.add('btn-outline-success');
+                setTimeout(() => {
+                    updateButton.classList.remove('btn-outline-success');
+                    updateButton.classList.add('btn-outline-secondary');
+                }, 2000);
+                
+                statusUpdateModal.hide();
+            } else {
+                throw new Error('Status update failed');
+            }
+        } catch (error) {
+            console.error('ステータス更新エラー:', error);
+            flash('ステータスの更新に失敗しました。', 'danger');
+            // エラー時のフォールバック処理
+            const row = document.querySelector(`tr[data-id="${currentContactId}"]`);
+            const updateButton = row.querySelector('.update-status');
+            updateButton.classList.remove('btn-outline-secondary');
+            updateButton.classList.add('btn-outline-danger');
+            setTimeout(() => {
+                updateButton.classList.remove('btn-outline-danger');
+                updateButton.classList.add('btn-outline-secondary');
+            }, 2000);
+        } finally {
+            // ボタンを元の状態に戻す
+            button.disabled = false;
+            button.textContent = originalButtonText;
+            loadingOverlay.classList.add('d-none');
+        }
+    });
+
+    // 検索機能
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const statusFilter = document.getElementById('statusFilter');
+
+    function filterContacts() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const statusValue = statusFilter.value;
+        const rows = document.querySelectorAll('.contact-row');
+
+        rows.forEach(row => {
+            const name = row.children[2].textContent.toLowerCase();
+            const email = row.children[3].textContent.toLowerCase();
+            const message = row.children[4].textContent.toLowerCase();
+            const status = row.querySelector('.status-badge').textContent;
+
+            const matchesSearch = name.includes(searchTerm) || 
+                                email.includes(searchTerm) || 
+                                message.includes(searchTerm);
+            const matchesStatus = !statusValue || 
+                                status === statusFilter.options[statusFilter.selectedIndex].text;
+
+            row.style.display = matchesSearch && matchesStatus ? '' : 'none';
+        });
+    }
+
+    searchButton.addEventListener('click', filterContacts);
+    searchInput.addEventListener('keyup', filterContacts);
+    statusFilter.addEventListener('change', filterContacts);
+
+    // ソート機能
+    document.querySelectorAll('.sortable').forEach(header => {
+        header.addEventListener('click', function() {
+            const column = this.dataset.sort;
+            const tbody = document.querySelector('#contactsTable tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            // ソート方向を切り替え
+            const isAsc = this.classList.contains('asc');
+            document.querySelectorAll('.sortable').forEach(h => {
+                h.classList.remove('asc', 'desc');
+            });
+            this.classList.add(isAsc ? 'desc' : 'asc');
+
+            // ソート実行
+            rows.sort((a, b) => {
+                let aVal, bVal;
+                switch(column) {
+                    case 'created_at':
+                        aVal = new Date(a.children[1].textContent);
+                        bVal = new Date(b.children[1].textContent);
+                        break;
+                    case 'name':
+                        aVal = a.children[2].textContent;
+                        bVal = b.children[2].textContent;
+                        break;
+                    case 'status':
+                        aVal = a.querySelector('.status-badge').textContent;
+                        bVal = b.querySelector('.status-badge').textContent;
+                        break;
+                }
+                if (aVal < bVal) return isAsc ? -1 : 1;
+                if (aVal > bVal) return isAsc ? 1 : -1;
+                return 0;
+            });
+
+            // テーブルを再構築
+            rows.forEach(row => tbody.appendChild(row));
+        });
+    });
+});
+</script>
+{% endblock %}

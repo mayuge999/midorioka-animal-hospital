@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %} - 診療案内{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="text-center mb-5">診療案内</h1>
+        
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <img src="https://images.unsplash.com/photo-1649941437430-3b1a08213beb" class="img-fluid rounded" alt="診療室">
+            </div>
+            <div class="col-md-6">
+                <h3>診療時間</h3>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>診療時間</th>
+                            <th>月</th>
+                            <th>火</th>
+                            <th>水</th>
+                            <th>木</th>
+                            <th>金</th>
+                            <th>土</th>
+                            <th>日祝</th>
+                        </tr>
+                        <tr>
+                            <td>9:00-12:00</td>
+                            <td>○</td>
+                            <td>○</td>
+                            <td>○</td>
+                            <td>○</td>
+                            <td>○</td>
+                            <td>○</td>
+                            <td>休</td>
+                        </tr>
+                        <tr>
+                            <td>14:00-18:00</td>
+                            <td>○</td>
+                            <td>○</td>
+                            <td>○</td>
+                            <td>○</td>
+                            <td>○</td>
+                            <td>△</td>
+                            <td>休</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>△: 17:00まで</p>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-12">
+                <h3 class="mb-4">診療内容</h3>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">一般診療</h5>
+                                <ul class="list-unstyled">
+                                    <li>・健康診断</li>
+                                    <li>・予防接種</li>
+                                    <li>・内科治療</li>
+                                    <li>・外科治療</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">専門診療</h5>
+                                <ul class="list-unstyled">
+                                    <li>・歯科治療</li>
+                                    <li>・皮膚科治療</li>
+                                    <li>・腫瘍治療</li>
+                                    <li>・眼科治療</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">その他のサービス</h5>
+                                <ul class="list-unstyled">
+                                    <li>・トリミング</li>
+                                    <li>・ペットホテル</li>
+                                    <li>・しつけ相談</li>
+                                    <li>・栄養相談</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h3 class="mb-4">診療費について</h3>
+                <p>初診料: 3,300円（税込）<br>
+                   再診料: 2,200円（税込）</p>
+                <p>その他の治療費は、診察内容により異なります。<br>
+                   詳しくは診察時にご説明いたします。</p>
+                <a href="{{ url_for('reservation') }}" class="btn btn-primary btn-lg mt-3">予約する</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

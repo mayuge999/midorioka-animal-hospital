@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %} - 予約{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <img src="https://images.unsplash.com/photo-1673090586803-e146697186ba" class="img-fluid rounded" alt="ペットの診察">
+                <div class="mt-4">
+                    <img src="https://images.unsplash.com/photo-1541358802508-7fa649861db1" class="img-fluid rounded" alt="動物病院">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h2 class="mb-4">診療予約</h2>
+                <p class="mb-4">ご予約は下記フォームからお願いいたします。<br>
+                   ※急を要する場合は直接お電話ください。</p>
+                
+                <form method="POST" class="needs-validation" novalidate>
+                    {{ form.csrf_token }}
+                    <div class="mb-3">
+                        {{ form.pet_owner.label(class="form-label") }}
+                        {{ form.pet_owner(class="form-control") }}
+                        {% if form.pet_owner.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.pet_owner.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.pet_name.label(class="form-label") }}
+                        {{ form.pet_name(class="form-control") }}
+                        {% if form.pet_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.pet_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.pet_type.label(class="form-label") }}
+                        {{ form.pet_type(class="form-select") }}
+                        {% if form.pet_type.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.pet_type.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.phone.label(class="form-label") }}
+                        {{ form.phone(class="form-control") }}
+                        {% if form.phone.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.phone.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(class="form-control") }}
+                        {% if form.email.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.appointment_date.label(class="form-label") }}
+                        {{ form.appointment_date(class="form-control") }}
+                        {% if form.appointment_date.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.appointment_date.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.appointment_time.label(class="form-label") }}
+                        {{ form.appointment_time(class="form-select") }}
+                        {% if form.appointment_time.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.appointment_time.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.reason.label(class="form-label") }}
+                        {{ form.reason(class="form-control", rows="4") }}
+                        {% if form.reason.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.reason.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">予約する</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

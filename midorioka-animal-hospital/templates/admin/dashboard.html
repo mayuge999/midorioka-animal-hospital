@@ -1,0 +1,90 @@
+{% extends "admin/base.html" %}
+
+{% block title %} - ダッシュボード{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">最近の予約</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>日時</th>
+                                <th>飼い主</th>
+                                <th>ステータス</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in appointments[:5] %}
+                            <tr>
+                                <td>{{ appointment.appointment_date.strftime('%Y/%m/%d') }} {{ appointment.appointment_time.strftime('%H:%M') }}</td>
+                                <td>{{ appointment.pet_owner }}</td>
+                                <td>
+                                    {% if appointment.status == 'pending' %}
+                                        <span class="badge bg-warning">未対応</span>
+                                    {% elif appointment.status == 'confirmed' %}
+                                        <span class="badge bg-info">確認済み</span>
+                                    {% elif appointment.status == 'completed' %}
+                                        <span class="badge bg-success">完了</span>
+                                    {% elif appointment.status == 'cancelled' %}
+                                        <span class="badge bg-danger">キャンセル</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('admin_appointment_detail', id=appointment.id) }}" class="btn btn-sm btn-outline-primary">詳細</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{{ url_for('admin_appointments') }}" class="btn btn-outline-primary">すべての予約を表示</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">最近のお問い合わせ</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>日時</th>
+                                <th>お名前</th>
+                                <th>ステータス</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contact in contacts[:5] %}
+                            <tr>
+                                <td>{{ contact.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
+                                <td>{{ contact.name }}</td>
+                                <td>
+                                    {% if contact.status == 'unread' %}
+                                        <span class="badge bg-danger">未読</span>
+                                    {% elif contact.status == 'read' %}
+                                        <span class="badge bg-info">既読</span>
+                                    {% elif contact.status == 'replied' %}
+                                        <span class="badge bg-success">返信済み</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('admin_contact_detail', id=contact.id) }}" class="btn btn-sm btn-outline-primary">詳細</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{{ url_for('admin_contacts') }}" class="btn btn-outline-primary">すべてのお問い合わせを表示</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
